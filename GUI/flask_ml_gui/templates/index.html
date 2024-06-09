@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Machine Learning Classification Project</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        const featureData = {};
+
+        function addInputFields() {
+            const selectedFeatures = document.getElementById('features').selectedOptions;
+            const inputDiv = document.getElementById('input-fields');
+            const selectedFeaturesList = document.getElementById('selected-features');
+            inputDiv.innerHTML = ''; // Clear previous fields
+
+            for (let option of selectedFeatures) {
+                const feature = option.value;
+
+                const label = document.createElement('label');
+                label.htmlFor = feature;
+                label.innerText = `Enter value for ${feature}:`;
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.name = feature;
+                input.id = feature;
+                input.required = true;
+
+                if (featureData[feature]) {
+                    input.value = featureData[feature];
+                }
+
+                input.addEventListener('input', function() {
+                    featureData[feature] = input.value;
+                    updateSelectedFeaturesList();
+                });
+
+                inputDiv.appendChild(label);
+                inputDiv.appendChild(input);
+                inputDiv.appendChild(document.createElement('br'));
+            }
+            updateSelectedFeaturesList();
+        }
+
+        function updateSelectedFeaturesList() {
+            const selectedFeaturesList = document.getElementById('selected-features');
+            selectedFeaturesList.innerHTML = ''; // Clear previous selections
+
+            for (let feature in featureData) {
+                const featureItem = document.createElement('div');
+                featureItem.className = 'feature-item';
+                featureItem.innerText = `${feature}: ${featureData[feature]}`;
+                selectedFeaturesList.appendChild(featureItem);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Machine Learning Classification Project</h1>
+    <form method="POST" action="/predict">
+        <label for="features">Select features to input:</label>
+        <br>
+        <select id="features" name="features" multiple onchange="addInputFields()">
+            {% for feature in features %}
+                <option value="{{ feature }}">{{ feature }}</option>
+            {% endfor %}
+        </select>
+        <div id="input-fields">
+            <!-- Dynamic input fields will appear here -->
+        </div>
+        <div id="selected-features">
+            <!-- Selected features will appear here -->
+        </div>
+        <button type="submit">Predict</button>
+    </form>
+</body>
+</html>
